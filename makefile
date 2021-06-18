@@ -16,7 +16,7 @@ $(PROGRAM): $(OBJS)
 $(OBJS): %.o : %.f90 
 	$(FC) $(FCFLAGS) -c $< $(LPFLAGS)
 
-mod_proc.o: mod_prec.o
+mod_proc.o mod_init.o: mod_prec.o
 mod_lpck.o: mod_prec.o mod_proc.o
 
 

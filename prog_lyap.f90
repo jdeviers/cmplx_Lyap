@@ -1,28 +1,23 @@
 PROGRAM cmplx_lyap
 	USE mod_prec
+	USE mod_init
 	USE mod_proc
 	USE mod_lpck
 	implicit none
 
-	INTEGER,PARAMETER      :: N = 5
-	COMPLEX(8),ALLOCATABLE :: A(:,:)
-	COMPLEX(8),ALLOCATABLE :: Q(:,:),R(:,:)
+	INTEGER,PARAMETER      :: N = 12
+	COMPLEX(8),ALLOCATABLE :: A(:,:),D(:,:)
+	COMPLEX(8),ALLOCATABLE :: Q(:,:),R(:,:),B(:,:)
 	COMPLEX(8),ALLOCATABLE :: TAU(:)
 
-	COMPLEX(8),ALLOCATABLE :: B(:,:)
+! ! -- This block to use random initial A matrix
+! 	ALLOCATE(A(N,N))
+! 	WRITE(11,*) A ! Necessary to initialise A, it seems
+! 	CALL INIT_A_RND(N,A)
 
-	ALLOCATE(A(N,N))
-	WRITE(11,*) A ! Necessary to initialise A, it seems
-	CALL INIT_A(N,A)
-
+	CALL INIT_A(A)
 	WRITE(*,'(/,A)') 'Initial A matrix:'
 	CALL PRINT_CMAT(A)
-
-!	TEST:
-	ALLOCATE(B(3,4))
-    B(1,1)=(-1.60,0.10);B(1,2)=( 0.30, 1.70);B(1,3)=( 0.30, 0.20);B(1,4)=(-0.50,-1.80)
-	B(2,1)=(-1.20,0.00);B(2,2)=(-0.90,-0.50);B(2,3)=( 1.50, 0.80);B(2,4)=( 1.50,-1.10)
-    B(3,1)=(-0.10,1.30);B(3,2)=(-1.10, 0.50);B(3,3)=( 0.40,-1.30);B(3,4)=( 1.60, 0.70)
 
 	CALL SCHUR_DECOMP(A,TAU)
 	WRITE(*,'(/,A)') 'Compact QR matrix:'
@@ -46,6 +41,13 @@ PROGRAM cmplx_lyap
 	IF (UBOUND(A,1).EQ.UBOUND(A,2)) CALL CHECK_REBUILD_A(Q,R) ! Need square matrix
 ! -- This fails.
 
-	DEALLOCATE(A,B)
+	CALL INIT_D(D)
+	WRITE(*,'(/,A)') 'D matrix, from AX + XA^H = D; must take the negative b/c we solve here AX + XA^H + (-D) = 0:'
+	CALL PRINT_CMAT(D)
+	CALL CHOLESKY(N,mat_to_packed(N,D),B)
+
+
+	DEALLOCATE(A,D)
+	DEALLOCATE(Q,R,B)
 
 END PROGRAM cmplx_lyap

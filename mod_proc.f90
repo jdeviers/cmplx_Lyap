@@ -156,4 +156,47 @@ MODULE mod_proc
 
 	END SUBROUTINE CHECK_REBUILD_A
 
+	FUNCTION mat_to_packed(dim,M)
+		implicit none
+
+!	.. Parameters ..
+		INTEGER          :: dim
+		COMPLEX(8),ALLOCATABLE :: M(:,:)
+		COMPLEX(8),ALLOCATABLE :: mat_to_packed(:)
+!
+!	.. Local Scalars ..
+		INTEGER          :: i,j,k
+
+		ALLOCATE(mat_to_packed( dim*(dim+1)/2 ))
+		k=1
+		DO i=1,UBOUND(M,2)
+			DO j=1,i
+				mat_to_packed(k) = M(j,i)
+				k=k+1
+			END DO
+		END DO
+
+	END FUNCTION mat_to_packed
+
+	FUNCTION packed_to_mat(dim,V)
+		implicit none
+
+!	.. Parameters ..
+		INTEGER          :: dim
+		COMPLEX(8),ALLOCATABLE :: packed_to_mat(:,:)
+		COMPLEX(8),ALLOCATABLE :: V(:)
+!
+!	.. Local Scalars ..
+		INTEGER          :: i,k,l
+
+	ALLOCATE(packed_to_mat(dim,dim))
+	packed_to_mat = 0
+
+	DO i=1,UBOUND(packed_to_mat,1)
+			k = (i*(i-1)/2) + 1 ; l = (i*(i+1)/2)
+			packed_to_mat(1:i,i) = V(k:l)
+	END DO
+
+	END FUNCTION packed_to_mat
+
 END MODULE mod_proc
