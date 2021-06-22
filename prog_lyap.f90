@@ -5,10 +5,21 @@ PROGRAM cmplx_lyap
 	USE mod_lpck
 	implicit none
 
+!	.. Work scalars ..
+	INTEGER                :: i,j
+	REAL(dp)               :: mu
+	COMPLEX(8)             :: mu_c
+!	.. Param scalars ..
 	INTEGER,PARAMETER      :: N = 12
-	COMPLEX(8),ALLOCATABLE :: A(:,:),D(:,:)
-	COMPLEX(8),ALLOCATABLE :: Q(:,:),R(:,:),B(:,:)
+!	.. Cmplx arrays ..
+	COMPLEX(8),ALLOCATABLE :: A(:,:),U(:,:),btmp(:,:)
+	COMPLEX(8),ALLOCATABLE :: Q(:,:),R(:,:),CID(:,:)
 	COMPLEX(8),ALLOCATABLE :: TAU(:)
+
+!	.. Real arrays ..
+	REAL(dp),ALLOCATABLE   :: D(:,:),B(:,:),b_rowvec(:,:),b_colvec(:,:)
+!	.. Real vecs ..
+	REAL(dp),ALLOCATABLE   :: u_vec(:)
 
 ! ! -- This block to use random initial A matrix
 ! 	ALLOCATE(A(N,N))
@@ -43,11 +54,54 @@ PROGRAM cmplx_lyap
 
 	CALL INIT_D(D)
 	WRITE(*,'(/,A)') 'D matrix, from AX + XA^H = D; must take the negative b/c we solve here AX + XA^H + (-D) = 0:'
-	CALL PRINT_CMAT(D)
+	CALL PRINT_RMAT(D)
+
+	D = -D
 	CALL CHOLESKY(N,mat_to_packed(N,D),B)
+	WRITE(*,'(/,A)') 'Cholesky factorisation B of D such that D = B * B^T:'
+	CALL PRINT_RMAT(D)
 
+! -- Modified Hammarling algorithm starts here:
+	CALL INIT_U(N,U)
+	ALLOCATE(b_rowvec(1,N))
+	ALLOCATE(b_colvec(N,1))
 
-	DEALLOCATE(A,D)
-	DEALLOCATE(Q,R,B)
+	DO j=N,2,-1
+! -- (1)
+		b_rowvec(1,:) = B(j,:)
+		mu            = NORM2(b_rowvec,1)
+		mu_c = SQRT( -2 * R(j,j) ) ! has to be complex b/c R(j,j) can be positive
+! -- (2)
+		ALLOCATE(u_vec(j-1))
+		IF (mu .GT. 0.d0) THEN
+			PRINT*, 'in'
+			b_rowvec = b_rowvec / mu
+			CALL BUILD_CID(j-1,CID)
+! -- btmp construction block --
+			ALLOCATE(btmp(j-1,1))
+			b_colvec = TRANSPOSE(CONJG(b_rowvec))
+			btmp = ( mu_c * MATMUL( B(1:j-1,:),b_colvec ) ) + ( R(1:j-1,j) * mu / mu_c) ! btmp is of dim (j-1,1)
+! -----------------------------
+			CALL SOLVE_FOR_UVEC(R,CID,btmp,u_vec)
+			B(1:j-1,:) = B(1:j-1,:) - ( MATMUL( u_vec,b_rowvec ) * mu_c )
+			DEALLOCATE(CID,btmp)
+		ELSE
+			u_vec = (0.d0,0.d0)
+		END IF
+! -- (3)
+		U(j,j) = mu / mu_c
+! -- (4)
+		U(1:j-1,j) = u_vec
+		DEALLOCATE(u_vec)
+	END DO
+
+	U(1,1) = NORM2(B(1,:),1) / SQRT( -2 * R(1,1) )
+	WRITE(*,'(/,A)') 'Cholesky factorisation U of the solution:'
+	CALL PRINT_CMAT(U)
+
+	DEALLOCATE(A,D)   ! Initial matrices
+	DEALLOCATE(Q,R)   ! Algo cmplx matrices
+	DEALLOCATE(b_rowvec,b_colvec) ! Algo cmplx vectors
+	DEALLOCATE(U,B)   ! Algo real matrices
 
 END PROGRAM cmplx_lyap

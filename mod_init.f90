@@ -83,12 +83,17 @@ MODULE mod_init
 	SUBROUTINE init_D(D)
 		implicit none
 
-		COMPLEX(8),ALLOCATABLE,INTENT(OUT) :: D(:,:)
+		REAL(dp),ALLOCATABLE,INTENT(OUT) :: D(:,:)
 
 		ALLOCATE(D(12,12))
 
 		D = (0.d0,0.d0)
-		D(1,1) = (0.33333d0,0.d0); D(2,2) = (0.33333d0,0.d0); D(3,3) = (0.33333d0,0.d0)
+
+		D(1,1) = (0.33333d0); D(2,2) = (0.33333d0); D(3,3) = (0.33333d0)
+		D(4,4) = (0.33333d0); D(5,5) = (0.33333d0); D(6,6) = (0.33333d0)
+		D(7,7) = (0.33333d0); D(8,8) = (0.33333d0); D(9,9) = (0.33333d0)
+		D(10,10) = (0.33333d0); D(11,11) = (0.33333d0); D(12,12) = (0.33333d0)
+
 
 	END SUBROUTINE init_D
 

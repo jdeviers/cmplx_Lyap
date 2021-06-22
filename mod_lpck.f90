@@ -59,22 +59,25 @@ MODULE mod_lpck
 		implicit none
 
 !	.. Parameters ..
-		INTEGER               :: dim
-		COMPLEX(8),ALLOCATABLE      :: B(:,:),AP(:)
+		INTEGER              :: dim
+		REAL(dp),ALLOCATABLE :: B(:,:),AP(:)
 !
 !	.. Local Scalars ..     
-		INTEGER               :: INFO,N
-		CHARACTER,PARAMETER   :: UPLO = 'U'
+		INTEGER              :: INFO,N
+		CHARACTER,PARAMETER  :: UPLO = 'U'
 !       
 !	.. External Subroutines ..
-		EXTERNAL              :: SPPTRF
+		EXTERNAL             :: DPPTRF
 !
 !	.. Initial Allocations ..
 		ALLOCATE(B(dim,dim))
 
 		N = dim
-		CALL ZPPTRF(UPLO,N,AP,INFO)
-		IF (INFO.NE.0) WRITE(*,*) 'WRONG INITIAL D MATRIX'
+		CALL DPPTRF(UPLO,N,AP,INFO)
+		IF (INFO.NE.0) THEN
+			WRITE(*,*) 'WRONG INITIAL D MATRIX'
+!			STOP
+		END IF
 
 		B = packed_to_mat(dim,AP)
 

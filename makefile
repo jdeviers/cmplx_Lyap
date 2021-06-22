@@ -3,7 +3,7 @@ MODS = $(wildcard mod_*.f90)
 OBJS = $(patsubst %.f90,%.o,$(MODS))
 
 FC      = gfortran
-FCFLAGS = -fbacktrace -Wall -Wtabs
+FCFLAGS = -fbacktrace -Waliasing -Wampersand -Wconversion -Wsurprising -Wc-binding-type -Wintrinsics-std -Wintrinsic-shadow -Wline-truncation -Wtarget-lifetime -Wreal-q-constant -Wunused 
 LPFLAGS = -llapack
 
 PROGRAM = cmplx_lyap

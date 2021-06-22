@@ -34,6 +34,36 @@ MODULE mod_proc
 
 	END SUBROUTINE PRINT_CVEC
 ! ----------
+	SUBROUTINE PRINT_RMAT(M)
+		implicit none
+
+!	.. Parameters ..
+		REAL(dp),INTENT(IN) :: M(:,:)
+
+!	.. Local scalars ..
+		INTEGER             :: i,j
+
+		DO i = 1,UBOUND(M,1)
+			WRITE(*,FMT_SR) (M(i,j), j=1,UBOUND(M,2))
+		END DO
+
+	END SUBROUTINE PRINT_RMAT
+! ----------
+	SUBROUTINE PRINT_RVEC(V)
+		implicit none
+
+!	.. Parameters ..
+		REAL(dp),INTENT(IN) :: V(:)
+
+!	.. Local scalars ..
+		INTEGER             :: i
+
+		DO i = 1,UBOUND(V,1)
+			WRITE(*,FMT_SR) V(i)
+		END DO
+
+	END SUBROUTINE PRINT_RVEC
+! ----------
 	SUBROUTINE UNPACK_QR(QR,Q,R)
 		implicit none
 
@@ -155,17 +185,17 @@ MODULE mod_proc
 		DEALLOCATE(Q_t)
 
 	END SUBROUTINE CHECK_REBUILD_A
-
+! ----------
 	FUNCTION mat_to_packed(dim,M)
 		implicit none
 
 !	.. Parameters ..
-		INTEGER          :: dim
-		COMPLEX(8),ALLOCATABLE :: M(:,:)
-		COMPLEX(8),ALLOCATABLE :: mat_to_packed(:)
+		INTEGER              :: dim
+		REAL(dp),ALLOCATABLE :: M(:,:)
+		REAL(dp),ALLOCATABLE :: mat_to_packed(:)
 !
 !	.. Local Scalars ..
-		INTEGER          :: i,j,k
+		INTEGER              :: i,j,k
 
 		ALLOCATE(mat_to_packed( dim*(dim+1)/2 ))
 		k=1
@@ -177,17 +207,17 @@ MODULE mod_proc
 		END DO
 
 	END FUNCTION mat_to_packed
-
+! ----------
 	FUNCTION packed_to_mat(dim,V)
 		implicit none
 
 !	.. Parameters ..
-		INTEGER          :: dim
-		COMPLEX(8),ALLOCATABLE :: packed_to_mat(:,:)
-		COMPLEX(8),ALLOCATABLE :: V(:)
+		INTEGER              :: dim
+		REAL(dp),ALLOCATABLE :: packed_to_mat(:,:)
+		REAL(dp),ALLOCATABLE :: V(:)
 !
 !	.. Local Scalars ..
-		INTEGER          :: i,k,l
+		INTEGER              :: i,k,l
 
 	ALLOCATE(packed_to_mat(dim,dim))
 	packed_to_mat = 0
@@ -198,5 +228,25 @@ MODULE mod_proc
 	END DO
 
 	END FUNCTION packed_to_mat
+! ----------
+	SUBROUTINE INIT_U(N,U)
+		implicit none
+
+!	.. Parameters ..
+		INTEGER,               INTENT(IN)  :: N
+		COMPLEX(8),ALLOCATABLE,INTENT(OUT) :: U(:,:)
+
+		ALLOCATE(U(N,N))
+		U = (0.d0,0.d0)
+
+	END SUBROUTINE INIT_U
+! ----------
+	SUBROUTINE SOLVE_FOR_UVEC(R,CID,btmp,uvec)
+		implicit none
+
+		COMPLEX(8),ALLOCATABLE :: R(:,:),CID(:,:),btmp(:,:),uvec(:)
+
+	END SUBROUTINE SOLVE_FOR_UVEC
+
 
 END MODULE mod_proc
