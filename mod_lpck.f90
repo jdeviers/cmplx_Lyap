@@ -59,8 +59,8 @@ MODULE mod_lpck
 		implicit none
 
 !	.. Parameters ..
-		INTEGER              :: dim
-		REAL(dp),ALLOCATABLE :: B(:,:),AP(:)
+		INTEGER                :: dim
+		COMPLEX(8),ALLOCATABLE :: B(:,:),AP(:)
 !
 !	.. Local Scalars ..     
 		INTEGER              :: INFO,N
@@ -73,7 +73,7 @@ MODULE mod_lpck
 		ALLOCATE(B(dim,dim))
 
 		N = dim
-		CALL DPPTRF(UPLO,N,AP,INFO)
+		CALL ZPPTRF(UPLO,N,AP,INFO)
 		IF (INFO.NE.0) THEN
 			WRITE(*,*) 'WRONG INITIAL D MATRIX'
 !			STOP
@@ -82,5 +82,12 @@ MODULE mod_lpck
 		B = packed_to_mat(dim,AP)
 
 	END SUBROUTINE Cholesky
+
+	SUBROUTINE SOLVE()
+		implicit none
+
+
+
+	END SUBROUTINE SOLVE
 
 END MODULE mod_lpck

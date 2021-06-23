@@ -191,8 +191,8 @@ MODULE mod_proc
 
 !	.. Parameters ..
 		INTEGER              :: dim
-		REAL(dp),ALLOCATABLE :: M(:,:)
-		REAL(dp),ALLOCATABLE :: mat_to_packed(:)
+		COMPLEX(8),ALLOCATABLE :: M(:,:)
+		COMPLEX(8),ALLOCATABLE :: mat_to_packed(:)
 !
 !	.. Local Scalars ..
 		INTEGER              :: i,j,k
@@ -213,8 +213,8 @@ MODULE mod_proc
 
 !	.. Parameters ..
 		INTEGER              :: dim
-		REAL(dp),ALLOCATABLE :: packed_to_mat(:,:)
-		REAL(dp),ALLOCATABLE :: V(:)
+		COMPLEX(8),ALLOCATABLE :: packed_to_mat(:,:)
+		COMPLEX(8),ALLOCATABLE :: V(:)
 !
 !	.. Local Scalars ..
 		INTEGER              :: i,k,l
@@ -244,7 +244,13 @@ MODULE mod_proc
 	SUBROUTINE SOLVE_FOR_UVEC(R,CID,btmp,uvec)
 		implicit none
 
-		COMPLEX(8),ALLOCATABLE :: R(:,:),CID(:,:),btmp(:,:),uvec(:)
+		COMPLEX(8) :: R(:,:), &
+		            CID(:,:), &
+				   btmp(:,:), &
+				   uvec(:,:)
+
+		WRITE(*,*) SHAPE(R),SHAPE(CID),SHAPE(btmp),SHAPE(uvec)
+
 
 	END SUBROUTINE SOLVE_FOR_UVEC
 
