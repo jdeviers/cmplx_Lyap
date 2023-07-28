@@ -46,8 +46,7 @@ PROGRAM cmplx_lyap
 	CALL CHECK_UNITARITY(Q)
 ! -- OK
 
-	IF (UBOUND(A,1).EQ.UBOUND(A,2)) CALL CHECK_REBUILD_A(Q,R) ! Need square matrix
-! -- This fails.
+!	IF (UBOUND(A,1).EQ.UBOUND(A,2)) CALL CHECK_REBUILD_A(Q,R) ! Need square matrix
 
 	CALL INIT_D(D)
 	WRITE(*,'(/,A)') 'D matrix, from AX + XA^H = D; must take the negative b/c we solve here AX + XA^H + (-D) = 0:'
